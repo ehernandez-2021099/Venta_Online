@@ -1,5 +1,6 @@
 const { request, response } = require('express');
 const Categoria = require('../models/categoria');
+const Producto = require('../models/producto')
 
 
 const getCategorias = async (req = request, res = response) => {
@@ -13,7 +14,7 @@ const getCategorias = async (req = request, res = response) => {
      ]);
  
      res.json({
-         msg: 'get Api - Controlador Usuario',
+         msg: 'get Api - Controlador categorias',
         listaCategorias
      });
 
@@ -77,6 +78,15 @@ const deleteCategoria = async (req = request, res = response) => {
 
     const { id } = req.params;
 
+    /// El id es de la categoria por defecto 
+    Producto.updateMany({ categoria: id }, { categoria: "640bf46478118c58958904b4" }, (err, res) =>
+     {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(`completado`);
+        }
+      });
     //Editar o actualiar la cateogira: Estado FALSE
     const categoriaBorrada = await Categoria.findByIdAndUpdate(id, { estado: false }, { new: true });
 

@@ -2,6 +2,10 @@ const { request, response } = require('express');
 const { ObjectId } = require('mongoose').Types;
 
 const Usuario = require('../models/usuario');
+const Categoria = require('../models/categoria');
+const Producto = require('../models/producto');
+
+
 
 const coleccionesPermitidas = [
     'usuarios',
@@ -9,7 +13,8 @@ const coleccionesPermitidas = [
     'productos',
     'roles',
     'clientes',
-    'administradores'
+    'administradores',
+    'factura'
 ];
 
 
@@ -41,6 +46,59 @@ const buscarUsuarios = async( termino = '', res = response) => {
 }
 
 
+const buscarCategoria = async( termino = '', res = response) => {
+
+    const esMongoID = ObjectId.isValid( termino );  //TRUE
+
+    if ( esMongoID ) {
+        const categoria = await Categoria.findById(termino);
+        return res.json({
+            //results: [ categorai ]
+            results: ( categoria ) ? [ categoria ] : [] 
+            //Preugntar si el categoria existe, si no existe regresa un array vacio
+        });
+    } 
+
+    //Expresiones regulares, buscar sin impotar mayusculas y minusculas (DIFIERE DE EL)
+    const regex = new RegExp( termino, 'i');
+
+    const categorias = await Categoria.find({
+        $or: [ { nombre: regex }],
+        $and: [ { estado: true } ]
+    });
+
+    res.json({
+        results: categorias
+    })
+
+}
+
+const buscarProductos = async( termino = '', res = response) => {
+
+    const esMongoID = ObjectId.isValid( termino );  //TRUE
+
+    if ( esMongoID ) {
+        const producto = await Producto.findById(termino);
+        return res.json({
+            //results: [ categorai ]
+            results: ( producto ) ? [ producto ] : [] 
+            //Preugntar si el categoria existe, si no existe regresa un array vacio
+        });
+    } 
+
+    //Expresiones regulares, buscar sin impotar mayusculas y minusculas (DIFIERE DE EL)
+    const regex = new RegExp( termino, 'i');
+
+    const productos = await Producto.find({
+        $or: [ { nombre: regex }],
+        $and: [ { estado: true } ]
+    });
+
+    res.json({
+        results: productos
+    })
+
+}
 const buscar = (req = request, res = response) => {
 
     const { coleccion, termino } = req.params;
@@ -58,16 +116,22 @@ const buscar = (req = request, res = response) => {
             buscarUsuarios(termino, res);
         break;
         case 'categorias':
-           
+           buscarCategoria(termino, res)
         break;
         case 'productos':
-            
+            buscarProductos(termino, res);
         break;
         case 'clientes':
-
+            
         break;
         case 'administradores':
 
+        break;
+        case 'facturas':
+            
+        break;
+        case 'carros':
+            
         break;
         default:
             res.status(500).json({
@@ -81,4 +145,5 @@ const buscar = (req = request, res = response) => {
 
 module.exports = {
     buscar
+
 }

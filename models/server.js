@@ -17,7 +17,9 @@ class Server {
             productos:      '/api/productos',
             usuarios:       '/api/usuarios',
             clientes:       '/api/clientes',
-            administradores: '/api/administradores'
+            administradores:'/api/administradores',
+            carros:         '/api/carros',
+            facturas:       '/api/facturas',
 
         }
 
@@ -59,8 +61,10 @@ class Server {
         this.app.use(this.paths.categorias, require('../routes/categoria'));
         this.app.use(this.paths.productos, require('../routes/producto'));
         this.app.use(this.paths.usuarios, require('../routes/usuario'));
-        ///this.app.use(this.paths.clientes, require('../routes/'));
-        ///this.app.use(this.paths.Administradores, require('../routes/'));
+        this.app.use(this.paths.clientes, require('../routes/cliente'));
+        this.app.use(this.paths.administradores, require('../routes/admin'));
+        this.app.use(this.paths.carros, require('../routes/carro'));
+        this.app.use(this.paths.facturas, require('../routes/factura'));
 
     }
 

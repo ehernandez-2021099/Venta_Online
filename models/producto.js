@@ -3,14 +3,10 @@ const { Schema, model } = require('mongoose');
 const ProductoSchema = Schema({
     nombre: {
         type: String,
-        required: [true , 'El nombre de la cateogira es obligatorio'],
+        required: [true , 'El nombre del producto es obligatorio'],
         unique: true
     },
-    estado: {
-        type: Boolean,
-        default: true,
-        required: true
-    },
+    
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
@@ -27,6 +23,19 @@ const ProductoSchema = Schema({
     },
     descripcion: { type: String },
     disponible: { type: Boolean, default: true },
+    ventas:{
+        type:Number,
+        default:0
+    },
+    estado: {
+        type: Boolean,
+        default: true,
+        required: true
+    },
+    stock:{
+        type:Number,
+        default:0
+    }
 
 });
 

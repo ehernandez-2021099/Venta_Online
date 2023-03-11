@@ -7,7 +7,7 @@ const { validarJWT } = require('../middlewares/validar-jwt');
 const { tieneRole, esAdminRole } = require('../middlewares/validar-roles');
 
 //Controllers
-const { postProducto, putProducto, deleteProducto, getProductos, getProductoPorId } = require('../controllers/producto');
+const {getProducAgotado, postProducto, putProducto, deleteProducto, getProductos, getProductoPorId, getProductMas} = require('../controllers/producto');
 
 const { existeProductoPorId } = require('../helpers/db-validators');
 
@@ -19,11 +19,26 @@ const router = Router();
 router.get('/', getProductos );
 
 //Obtener un producto por id - publico
-router.get('/:id', [
-    check('id', 'No es un id de Mongo Válido').isMongoId(),
-    check('id').custom( existeProductoPorId ),
-    validarCampos
-],  getProductoPorId);
+// router.get('/:id', [
+//     check('id', 'No es un id de Mongo Válido').isMongoId(),
+//     check('id').custom( existeProductoPorId ),
+//     validarCampos
+// ],  getProductoPorId);
+
+router.get('/Agotados',[
+    
+    //check('id', 'No es un id de Mongo Válido').isMongoId(),
+    //check('id').custom( existeProductoPorId ),
+    
+], getProducAgotado)
+
+router.get('/MasVendido',[
+    
+    //check('id', 'No es un id de Mongo Válido').isMongoId(),
+    //check('id').custom( existeProductoPorId ),
+], getProductMas)
+
+
 
 // Crear producto - privada - cualquier persona con un token válido
 router.post('/agregar', [
@@ -35,7 +50,6 @@ router.post('/agregar', [
 // Actuaizar producto - privada - cualquier persona con un token válido
 router.put('/editar/:id', [
     validarJWT,
-    check('id', 'No es un id de Mongo Válido').isMongoId(),
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('id').custom( existeProductoPorId ),
     validarCampos

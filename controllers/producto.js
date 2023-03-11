@@ -26,18 +26,43 @@ const getProductoPorId = async (req = request, res = response) => {
 
    const { id } = req.params;
    const prouductoById = await Producto.findById( id )
-                                                    .populate('usuario', 'nombre')
-                                                    .populate('categoria', 'nombre');
+            .populate('usuario', 'nombre')
+            .populate('categoria', 'nombre');
 
    res.status(201).json( prouductoById );
 
+}
+
+const getProductMas = async (req = request, res = response)=>{
+
+    const query = await Producto.find().sort({ventas:-1}). limit(3);
+    res.status(201).json({
+        msg: "Lista de productos mas vendidos",
+        query
+    })
+}   
+
+const getProducAgotado = async (req = request, res = response) => {
+
+    const query = { disponible: false };
+
+    const listaProduc = await Promise.all([
+        Producto.countDocuments(query),
+        Producto.find(query)
+            .populate('usuario', 'correo')
+            .populate('categoria', 'nombre')
+    ]);
+
+    res.status(201).json({
+        msg: 'Get Api - productos agotados:',
+        listaProduc
+    });
 }
 
 
 const postProducto = async (req = request, res = response) => {
 
     const { estado, usuario, ...body } = req.body;
-
     const productoDB = await Producto.findOne({ nombre: body.nombre });
 
     //validacion si el producto ya existe
@@ -59,7 +84,10 @@ const postProducto = async (req = request, res = response) => {
     //Guardar en DB
     await producto.save();
 
-    res.status(201).json( producto );
+    res.status(201).json( {
+        msg:'Post Api - productos',
+        producto
+    } );
    
 }
 
@@ -90,13 +118,13 @@ const deleteProducto = async (req = request, res = response) => {
     //const productoEliminado = await Producto.findByIdAndDelete( id );
 
     //Eliminar por el estado:false
-    const productoEliminado_ = await Producto.findByIdAndUpdate( id, { estado: false}, { new: true } );
+    const productoEliminado = await Producto.findByIdAndUpdate( id, { estado: false}, { new: true } );
 
     
    res.json({
-        msg: 'DELETE',
+        msg: 'Delete Api - Producto',
         //productoEliminado,
-        productoEliminado_
+        productoEliminado
    })
 
 }
@@ -104,8 +132,10 @@ const deleteProducto = async (req = request, res = response) => {
 
 module.exports = {
    postProducto,
-   putProducto,
+   putProducto,  
    deleteProducto,
    getProductos,
-   getProductoPorId
+   getProductoPorId,
+   getProducAgotado,
+   getProductMas
 }

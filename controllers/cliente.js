@@ -23,6 +23,7 @@ const getCliente = async (req = request, res = response) => {
 const postCliente = async (req = request, res = response) => {
     rol='CLIENT'
     //Desestructuración
+    
     const { nombre, correo, password} = req.body;
     const clienteGuardadoDB = new Cliente({ nombre, correo, password, rol });
 
@@ -46,8 +47,8 @@ const postCliente = async (req = request, res = response) => {
 const putCliente = async (req = request, res = response) => {
 
     //Req.params sirve para traer parametros de las rutas
-    const { id } = req.params;
-    const { _id, img,  /* rol,*/  estado, google, ...resto } = req.body;
+    const _id = req.usuario.id;
+    const { img,  /* rol,*/  estado, google, ...resto } = req.body;
     //Los parametros img, rol, estado y google no se modifican, el resto de valores si (nombre, correo y password)
 
     //Si la password existe o viene en el req.body, la encripta
@@ -58,7 +59,7 @@ const putCliente = async (req = request, res = response) => {
     }
 
     //Editar al usuario por el id
-    const clienteEditado = await Cliente.findByIdAndUpdate(id, resto);
+    const clienteEditado = await Cliente.findByIdAndUpdate(_id, resto);
 
     res.json({
         msg: 'PUT editar Cliente',
@@ -70,13 +71,13 @@ const putCliente = async (req = request, res = response) => {
 
 const deleteCliente = async(req = request, res = response) => {
     //Req.params sirve para traer parametros de las rutas
-    const { id } = req.params;
+    const _id = req.usuario.id;
 
     //Eliminar fisicamente de la DB
     //const clienteEliminado = await Cliente.findByIdAndDelete( id);
 
     //Eliminar cambiando el estado a false
-     const clienteEliminado = await Cliente.findByIdAndUpdate(id, { estado: false });
+     const clienteEliminado = await Cliente.findByIdAndUpdate(_id, { estado: false });
 
     res.json({
         msg: 'DELETE eliminar cliente',
